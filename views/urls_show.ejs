@@ -10,19 +10,17 @@
 </head>
 <body style="font-size:20px; padding:50px;">
 
-    <% include ../partials/_header %>
 
-    <h2 style="padding:5px">My URLs</h2>
+    <% include partials/_header %>
+
+    <h2 style="padding:5px">Your URL</h2>
 
     <table>
         <!-- looping through the urls and putting them in a table-->
-        <% for(var url in urls) { %>
         <tr >
-            <th style="padding:10px"><%= url %></th>
-            <th style="padding:10px" ><a href='#'> <%= urls[url]%></th>
+            <th style="padding:10px"><%= shortURL %></th>
+            <th style="padding:10px" ><a href='#'> <%= longURL %></th>
         </tr>
-        <% }; %>
     </table>
 </body>
 </html>
-

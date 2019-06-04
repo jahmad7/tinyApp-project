@@ -21,12 +21,10 @@ app.get('/urls', (request, response) =>{
     response.render('urls_index', templateVars);
 });
 
-
-// hello route 
-app.get("/hello", (request, response) => {
-    let templateVars = {greeting: "Hello World!"};
-    response.render("hello_world", templateVars);
-  });
+app.get('/urls/:shortURL', (request, response) => {
+    let templateVars = {shortURL: request.params.shortURL, longURL: urlDatabase[request.params.shortURL]};
+    response.render('urls_show',templateVars);
+});
 
 app.listen(PORT, () => {
     console.log(`server is listening on port: ${PORT}`);
