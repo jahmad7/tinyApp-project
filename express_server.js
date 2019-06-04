@@ -10,18 +10,18 @@ var urlDatabase = {
 //home page route 
 app.get('/', (request, response) => {
     response.send("hello");
-})
+});
 
 //url route 
-.get('/url.json', (request, response)=> {
+app.get('/url.json', (request, response)=> {
     response.json(urlDatabase);
-})
+});
 
 // hello route 
-.get("/hello", (request, response) => {
+app.get("/hello", (request, response) => {
     response.send("<html><body>Hello <b>World</b></body></html>\n");
-  })
+  });
 
-.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`server is listening on port: ${PORT}`);
 });
