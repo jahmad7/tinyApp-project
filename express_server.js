@@ -1,3 +1,4 @@
+"use strict"
 const express = require('express');
 const app = express();
 const PORT = 8000;
@@ -14,14 +15,17 @@ app.get('/', (request, response) => {
     response.send("hello");
 });
 
-//url route 
-app.get('/url.json', (request, response)=> {
-    response.json(urlDatabase);
+//urls route handler to send data to our ejs template 
+app.get('/urls', (request, response) =>{
+    let templateVars = {urls: urlDatabase };
+    response.render('urls_index', templateVars);
 });
+
 
 // hello route 
 app.get("/hello", (request, response) => {
-    response.send("<html><body>Hello <b>World</b></body></html>\n");
+    let templateVars = {greeting: "Hello World!"};
+    response.render("hello_world", templateVars);
   });
 
 app.listen(PORT, () => {
