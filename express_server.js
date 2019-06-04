@@ -2,13 +2,28 @@
 const express = require('express');
 const app = express();
 const PORT = 8000;
+const bodyParser = require("body-parser");
 
 app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({extended: true}));
 
 var urlDatabase = {
     'b2xVn2': 'http://www.lighthouse.ca',
     '9sm5xK': 'http://www.google.com'
 }
+
+//***** FUNCTIONS  */
+
+function generateRandomString(longURL){
+
+}
+
+
+
+
+//*********** */
+
+
 
 //home page route 
 app.get('/', (request, response) => {
@@ -19,6 +34,15 @@ app.get('/', (request, response) => {
 app.get('/urls', (request, response) =>{
     let templateVars = {urls: urlDatabase };
     response.render('urls_index', templateVars);
+});
+
+//new url route
+app.post("/urls", (request, response) => {
+    console.log(request.body);
+    response.send("OK");
+});
+app.get('/urls/new', (request,response)=>{
+    response.render("urls_new");
 });
 
 app.get('/urls/:shortURL', (request, response) => {
