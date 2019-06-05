@@ -13,13 +13,22 @@
 
     <% include partials/_header %>
 
+
     <h2 style="padding:5px">Your URL</h2>
 
     <table>
-        <!-- looping through the urls and putting them in a table-->
+
+
         <tr >
             <th style="padding:10px"><a href="/u/<%= shortURL %>"><%= shortURL %></a></th>
             <th style="padding:10px" ><%= longURL %></th>
+            <th style="padding:10px"> 
+                    <form method="POST" action="/urls/<%= shortURL %>/update">
+                        <label for="longURL">Enter new URL:</label>
+                        <input class="form-control" type="text" name="longURL" placeholder="http://" style="width: 300px; margin: 1em">
+                        <button type="submit">UPDATE</button>
+                    </form>
+            </th>
         </tr>
     </table>
 </body>

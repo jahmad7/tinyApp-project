@@ -20,11 +20,12 @@
         <tr >
             <th style="padding:10px"><%= url %></th>
             <th style="padding:10px" >
-                <a href='#'> <%= urls[url]%></a>
+                <a href='/urls/<%= url %>'> <%= urls[url]%></a>
             </th>
             <th style="padding:10px">
-                    <form method="POST" action="/urls/<%= url %>/delete"></form>
-                    <button type="submit"> DELETE</button>
+                    <form method="POST" action="/urls/<%= url %>/delete">
+                        <button type="submit"> DELETE</button>
+                    </form>
             </th>
         </tr>
         <% }; %>
