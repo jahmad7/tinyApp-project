@@ -1,12 +1,16 @@
 "use strict"
+
+//import modules.
 const express = require('express');
 const app = express();
 const PORT = 8000;
 const bodyParser = require("body-parser");
 
+//add ejs and body parsing to our express library 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 
+//database to hold all of our urls 
 let urlDatabase = {
     'b2xVn2': 'http://www.lighthouse.ca',
     '9sm5xK': 'http://www.google.com'
@@ -19,9 +23,6 @@ function generateRandomString(){
     return short;
 }
 
-
-
-
 //*********** */
 
 
@@ -31,30 +32,29 @@ app.get('/', (request, response) => {
     response.send("hello");
 });
 
-//urls route handler to send data to our ejs template 
+//urls page route 
 app.get('/urls', (request, response) =>{
     let templateVars = {urls: urlDatabase };
     response.render('urls_index', templateVars);
 });
 
-//new url route
+//url post route
 app.post("/urls", (request, response) => {
     let shortURL = generateRandomString();
     urlDatabase[shortURL] = request.body.longURL;
-    
-    response.redirect("http://localhost:8000/urls/" + shortURL);
+    response.redirect(`urls/${shortURL}`);
 });
 
+//new url post 
 app.get('/urls/new', (request,response)=>{
     response.render("urls_new");
 });
 
+//short URL get request for page 
 app.get('/urls/:shortURL', (request, response) => {
     let longURLPass = urlDatabase[request.params.shortURL];
     let templateVars = {shortURL: request.params.shortURL, longURL: longURLPass};
     response.render('urls_show',templateVars);
-    
-    //response.redirect(longURLPass);
 });
 
 //redirect to actual webstie 
@@ -62,7 +62,7 @@ app.get("/u/:shortURL", (request, response) => {
     const longURL = urlDatabase[request.params.shortURL];
     console.log(longURL)
     response.redirect(longURL);
-  });
+});
 
 app.listen(PORT, () => {
     console.log(`server is listening on port: ${PORT}`);
