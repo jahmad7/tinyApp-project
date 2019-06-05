@@ -10,7 +10,7 @@
 </head>
 <body style="font-size:20px; padding:50px;">
 
-    <% include /partials/_header %>
+    <% include partials/_header %>
 
     <h2 style="padding:5px">My URLs</h2>
 
@@ -19,7 +19,13 @@
         <% for(var url in urls) { %>
         <tr >
             <th style="padding:10px"><%= url %></th>
-            <th style="padding:10px" ><a href='#'> <%= urls[url]%></th>
+            <th style="padding:10px" >
+                <a href='#'> <%= urls[url]%></a>
+            </th>
+            <th style="padding:10px">
+                    <form method="POST" action="/urls/<%= url %>/delete"></form>
+                    <button type="submit"> DELETE</button>
+            </th>
         </tr>
         <% }; %>
     </table>
