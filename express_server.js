@@ -5,10 +5,12 @@ const express = require('express');
 const app = express();
 const PORT = 8000;
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 
 //add ejs and body parsing to our express library 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser())
 
 //database to hold all of our urls 
 let urlDatabase = {
@@ -27,6 +29,7 @@ function generateRandomString(){
 
 
 
+
 //home page route 
 app.get('/', (request, response) => {
     response.send("hello");
@@ -34,12 +37,16 @@ app.get('/', (request, response) => {
 
 //urls page route 
 app.get('/urls', (request, response) =>{
-    let templateVars = {urls: urlDatabase };
+    let templateVars = {
+        urls: urlDatabase,
+        username: request.cookies["username"] 
+    };
     response.render('urls_index', templateVars);
 });
 
 //url post route
 app.post("/urls", (request, response) => {
+    
     let shortURL = generateRandomString();
     urlDatabase[shortURL] = request.body.longURL;
     response.redirect(`urls/${shortURL}`);
@@ -81,6 +88,17 @@ app.post(`/urls/:shortURL/update`,(request, response) => {
     console.log(request);
 
     response.redirect("/urls");
+});
+
+app.post(`/login`, (request, response) => {
+    const username = request.body.username;
+    //making a cookie
+    response.cookie(`username`, username).redirect('/urls');
+});
+
+app.post(`/logout`, (request, response) => {
+    //deleting a cookie
+    response.clearCookie('username') .redirect('/urls');
 });
 
 app.listen(PORT, () => {
