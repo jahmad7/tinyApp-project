@@ -1,21 +1,25 @@
 "use strict"
 
 //import modules.
+const PORT = 8000;
 const express = require('express');
 const app = express();
-const PORT = 8000;
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
-const USERDATA = require("./xUserData");
-const FUNCTIONS = require("./functionCalls");
 const bcrypt = require('bcrypt');
 const cookieSession = require("cookie-session");
 
-//add ejs, body parsing and cookie parse to our express library 
+//modular code 
+const USERDATA = require("./xUserData");
+const FUNCTIONS = require("./functionCalls");
+
+//add modules to our express server 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
-//use static files 
+
+//use static files on server for css and other static files 
 app.use(express.static("static"));
+
+//set cookie session information
 app.use(cookieSession({
     name: 'session',
     keys: ["why in the world does isNaN never work"],
@@ -30,6 +34,7 @@ app.get('/', (request, response) => {
     let templateVars = {
         user: USERDATA.currentUser
     };
+
     response.render('index', templateVars);
 });
 
@@ -38,6 +43,7 @@ app.get('/urls', (request, response) =>{
     let templateVars = {
         user: USERDATA.currentUser
     };
+
     if (USERDATA.currentUser.id !== null){
         response.render('urls_index', templateVars);
     }else {
@@ -45,7 +51,7 @@ app.get('/urls', (request, response) =>{
     }
 });
 
-app.post('/registration', (request, response) => {    //GO TO GO  
+app.post('/registration', (request, response) => {   
     const email = request.body.email;
     const password = request.body.password;
     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -57,14 +63,20 @@ app.post('/registration', (request, response) => {    //GO TO GO
                 id: userID,
                 email: email,
                 password: hashedPassword,
-                urlDb: null,
-                visitLog: null
+                urlDb: {},
+                visitLog: {}
             };
             USERDATA.users[userID] = JSON.parse(JSON.stringify(USERDATA.currentUser));
+
+            let templateVars = {
+                user: USERDATA.currentUser
+            };
+
             console.log("current user: ",USERDATA.currentUser);
             console.log("userdata: ", USERDATA.users);
             
             request.user_id = userID;
+            response.render('urls_index', templateVars);
         }else{
             response.status(403).redirect('/registration');
         }
@@ -81,51 +93,60 @@ app.get('/registration', (request, response) => {
 //url post route
 app.post("/urls", (request, response) => {
     let shortURL = FUNCTIONS.generateRandomString();
+    console.log(request.body.longURL);
+    console.log(USERDATA.currentUser.urlDb[shortURL]);
     USERDATA.currentUser.urlDb[shortURL] = request.body.longURL;
     console.log(USERDATA.currentUser)
     response.redirect(`urls/${shortURL}`);
 });
 
+//to create a new short url
+app.get('/urls/new', (request,response)=>{
+    let templateVars = {
+        urls: USERDATA.urlDatabase,
+        user: USERDATA.currentUser
+    };
 
-    app.get('/urls/new', (request,response)=>{
-        let templateVars = {
-            urls: USERDATA.urlDatabase,
-            user: USERDATA.currentUser
-        };
-
-        if (USERDATA.currentUser.id !== null){
-            console.log(USERDATA.currentUser.id);
-            response.render("urls_new", templateVars);
-        }else {
-            console.log(USERDATA.currentUser.id);
-            response.render('index', templateVars);
-        }
-    });
+    if (USERDATA.currentUser.id !== null){
+        console.log(USERDATA.currentUser.id);
+        response.render("urls_new", templateVars);
+    }else {
+        console.log(USERDATA.currentUser.id);
+        response.render('index', templateVars);
+    }
+});
 
 
 //short URL get request for page 
 app.get('/urls/:shortURL', (request, response) => {
+
     let longURLPass = USERDATA.currentUser.urlDb[request.params.shortURL];
+
     let templateVars = {
         shortURL: request.params.shortURL,
         longURL: longURLPass,
         user: USERDATA.currentUser
     };
+
     if (USERDATA.currentUser.id !== null){
-        response.render('urls_show',templateVars);
+        response.render('urls_show', templateVars);
     } else {
-        response.render('index',templateVars);
+        response.render('index', templateVars);
     }
 });
 
 //redirect to actual webstie 
 app.get("/u/:shortURL", (request, response) => {
-    const longURL = USERDATA.shortURLsObject[request.params.shortURL];
-    USERDATA.currentUser.visitLog[request.params.shortURL] += 1;
-    response.redirect(longURL);
 
+    const longURL = USERDATA.shortURLsObject[request.params.shortURL];
+
+    //visting log to create track of how many time the site is visited 
+    USERDATA.currentUser.visitLog[request.params.shortURL] += 1;
+
+    response.redirect(longURL);
 });
 
+//deleting url from url account
 app.post(`/urls/:shortURL/delete`,(request, response) => {
     const shortURL = request.params.shortURL;
     delete USERDATA.currentUser.urlDb[shortURL];
@@ -161,14 +182,16 @@ app.post(`/login`, (request, response) => {
 });
 
 app.post(`/logout`, (request, response) => {
-    console.log("BEFORE CLEAR: ", USERDATA.users);
+ 
     USERDATA.currentUser.id = null;
     USERDATA.currentUser.email = null;
     USERDATA.currentUser.password = null;
-    USERDATA.currentUser.visitLog = null;
+    USERDATA.currentUser.visitLog = {};
+    USERDATA.currentUser.urlDb = {};
+
     request.session = null;
+
     response.redirect('/urls');
-    console.log("LOG OUT: ", USERDATA.users);
 });
 
 app.listen(PORT, () => {
