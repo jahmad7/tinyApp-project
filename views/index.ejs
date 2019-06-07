@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TinyApp</title>
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+<link rel ="stylesheet" type = "text/css" href="myStyle.css">
+</head>
+<body>
+  <% include partials/_header %>
+
+  <div class="log-status">
+    <% if(!user.id) { %>
+        <form action="/login" method="POST" >
+        Email:<br>
+        <input type="text" name="email" value="user@example.com" placeholder="email@domain.com">
+        <br>
+        Password:<br>
+        <input type="password" name="password" value="purple-monkey-dinosaour" placeholder="password">
+        <br><br>
+        <input type="submit" value="Login">
+        </form> 
+    <% } else { %>
+        <h3>Welcome to Tinyapp</h3>
+        <p>You are ready to create tiny URLs</p>
+    <% } %>
+</div>
+
+</body>
+</html>

@@ -6,29 +6,41 @@
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <link rel ="stylesheet" type = "text/css" href="myStyle.css">
   <title>TinyApp</title>
 </head>
-<body style="font-size:20px; padding:50px;">
+<body>
 
     <% include partials/_header %>
+
+    <div class="main-container">
+        <h2>My URLs</h2>
+        <div class="urls-table-main">
+        </div>
+
+    </div>
 
     <h2 style="padding:5px">My URLs</h2>
 
     <table>
         <!-- looping through the urls and putting them in a table-->
-        <% for(var url in urls) { %>
-        <tr >
-            <th style="padding:10px"><%= url %></th>
-            <th style="padding:10px" >
-                <a href='/urls/<%= url %>'> <%= urls[url]%></a>
-            </th>
-            <th style="padding:10px">
-                    <form method="POST" action="/urls/<%= url %>/delete">
-                        <button type="submit"> DELETE</button>
-                    </form>
-            </th>
-        </tr>
-        <% }; %>
+        <% if(user.id) { %>
+            <% for(var url in user.urlDb) { %>
+                <tr >
+                    <th style="padding:10px"><%= url %></th>
+                    <th style="padding:10px" >
+                        <a href='/urls/<%= url %>'> <%= user.urlDb[url]%></a>
+                    </th>
+                    <th style="padding:10px">
+                        <form method="POST" action="/urls/<%= url %>/delete">
+                            <button type="submit"> DELETE</button>
+                        </form>
+                    </th>
+                </tr>
+            <% }; %>
+        <% } else { %>    
+            <p>Please login in to view saved urls</p>
+        <% } %>
     </table>
 </body>
 </html>

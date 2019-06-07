@@ -1,0 +1,27 @@
+
+.header-container {
+    display: flex;
+}
+
+.header-container div {
+    //border: 1px #ccc solid
+}
+
+.logo {
+    flex: 1;
+}
+
+.header-middle {
+    flex: 4;
+    padding: 20px;
+}
+
+.log-status {
+    flex: 1;
+    padding: 20px;
+}
+
+#site-title {
+    padding: 20px;
+}
+   

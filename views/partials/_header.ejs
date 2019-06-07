@@ -1,22 +1,34 @@
-<header>
-    <div >
-        <h1>TinyApp</h1>
-        <% if(username) { %>
-            <h3>Welcome <%= username %></h3>
-        <% } %>
-        <h3><a href="#">create New TinyURL</a></h3>
-    </div>
-    <div style="float: right" >
-        <% if(!username) { %>
-            <form method="POST" action="/login">
-            <input type="text" name="username" placeholder="user name" value="username">
-            <button type="submit">Login</button>
-            </form>
-        <% } else { %>
-            <form method="POST" action="/logout">
-                <button type="submit">Logout</button>
-            </form>
+<header class="header-container">
+
+    <div class="logo">
+        <h1 id="site-title">TINYAPP</h1>
+        <% if (user.id) { %>
+            <p id="site-title"><a href="/urls">URLs</a> | <a href="/urls/new">New URL</a></p>
+        <% }else { %>
+            <p id="site-title"><a href="/">Login</a> | <a href="/registration">Register</a></p>
         <% } %>
     </div>
+
+    <div class="header-middle">
+        <% if(user.id) { %>
+            <h3>Welcome <%= user.email %></h3>
+            
+        <% } %>
+    </div>
+
+    <div class="log-status">
+            <% if(!user.id) { %>
+                <form action="/" method="GET" >
+                    <br><br>
+                    <input type="submit" value="Login">
+                </form> 
+            <% } else { %>
+                <form method="POST" action="/logout">
+                    <button type="submit">Logout</button>
+                </form>
+            <% } %>
+    </div>
+
 </header>
+
 
