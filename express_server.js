@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const USERDATA = require("./xUserData");
 const FUNCTIONS = require("./functionCalls");
+const bcrypt = require('bcrypt');
 
 //add ejs, body parsing and cookie parse to our express library 
 app.set('view engine', 'ejs');
@@ -31,23 +32,31 @@ app.get('/urls', (request, response) =>{
     let templateVars = {
         user: USERDATA.currentUser
     };
-    response.render('urls_index', templateVars);
+    if (USERDATA.currentUser.id !== null){
+        response.render('urls_index', templateVars);
+    }else {
+        console.log(USERDATA.currentUser.id);
+        response.render('index', templateVars);
+    }
 });
 
 app.post('/registration', (request, response) => {    //GO TO GO  
-    let email = request.body.email;
-    let password = request.body.password;
-    let userID = FUNCTIONS.generateRandomString();
+    const email = request.body.email;
+    const password = request.body.password;
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const userID = FUNCTIONS.generateRandomString();
 
     if (FUNCTIONS.validEmail(USERDATA.users, email)){
-        if(email && password){
+        if(email && hashedPassword){
             USERDATA.currentUser = {
                 id: userID,
                 email: email,
-                password: password,
+                password: hashedPassword,
                 urlDb: null
             };
-            USERDATA[userID] = USERDATA.currentUser;
+            USERDATA.users[userID] = JSON.parse(JSON.stringify(USERDATA.currentUser));
+            console.log("current user: ",USERDATA.currentUser);
+            console.log("userdata: ", USERDATA.users);
             
             response.cookie("userID", userID).redirect("/urls");
         }else{
@@ -56,7 +65,7 @@ app.post('/registration', (request, response) => {    //GO TO GO
     } else{response.status(403).redirect('/registration');}  
 });
 
-app.get('/registration', (request, response) => {  //GOOD TO GO
+app.get('/registration', (request, response) => {  
     let templateVars = {
         user: USERDATA.currentUser
     };
@@ -96,7 +105,11 @@ app.get('/urls/:shortURL', (request, response) => {
         longURL: longURLPass,
         user: USERDATA.currentUser
     };
-    response.render('urls_show',templateVars);
+    if (USERDATA.currentUser.id !== null){
+        response.render('urls_show',templateVars);
+    } else {
+        response.render('index',templateVars);
+    }
 });
 
 //redirect to actual webstie 
@@ -134,15 +147,17 @@ app.post(`/login`, (request, response) => {
 
         //making a cookie
         response.cookie("userID", USERDATA.currentUser.id).redirect("/urls");
-    }else{response.status(403).redirect('/urls')}
+    }else{response.status(403).redirect('/')}
 
 });
 
 app.post(`/logout`, (request, response) => {
+    console.log("BEFORE CLEAR: ", USERDATA.users);
     USERDATA.currentUser.id = null;
     USERDATA.currentUser.email = null;
     USERDATA.currentUser.password = null;
     response.clearCookie('userID') .redirect('/urls');
+    console.log("LOG OUT: ", USERDATA.users);
 });
 
 app.listen(PORT, () => {

@@ -1,4 +1,5 @@
 //***** FUNCTIONS  */
+const bcrypt = require('bcrypt');
 
 module.exports = {
     generateRandomString(){
@@ -18,14 +19,16 @@ module.exports = {
 
     validLogin(users, email, password){
         for (let user in users){
+            console.log(users[user]);
             let compareEmail = users[user].email;
             let comparePassword = users[user].password;
             console.log(user);
             console.log("compare email: ",compareEmail, " passed email: ", email);
             console.log("compare password: ",comparePassword, "passed password: ", password);
-            console.log(compareEmail === email && comparePassword === password)
 
-            if (compareEmail === email && comparePassword === password){
+            console.log(compareEmail === email && bcrypt.compareSync(password, comparePassword));
+
+            if (compareEmail === email && bcrypt.compareSync(password, comparePassword)){
                 console.log("returned ID: ",users[user].id);
                 return users[user].id;
             }
