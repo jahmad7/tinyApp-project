@@ -14,7 +14,6 @@ const cookieSession = require("cookie-session");
 //add ejs, body parsing and cookie parse to our express library 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
-//app.use(cookieParser())
 //use static files 
 app.use(express.static("static"));
 app.use(cookieSession({
@@ -23,9 +22,8 @@ app.use(cookieSession({
   
     // Cookie Options
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }))
+  }));
 
-console.log(USERDATA.currentUser)
 
 //home page route 
 app.get('/', (request, response) => {
@@ -43,7 +41,6 @@ app.get('/urls', (request, response) =>{
     if (USERDATA.currentUser.id !== null){
         response.render('urls_index', templateVars);
     }else {
-        console.log(USERDATA.currentUser.id);
         response.render('index', templateVars);
     }
 });
@@ -68,7 +65,6 @@ app.post('/registration', (request, response) => {    //GO TO GO
             console.log("userdata: ", USERDATA.users);
             
             request.user_id = userID;
-            //response.cookie("userID", userID).redirect("/urls");
         }else{
             response.status(403).redirect('/registration');
         }
@@ -171,7 +167,6 @@ app.post(`/logout`, (request, response) => {
     USERDATA.currentUser.password = null;
     USERDATA.currentUser.visitLog = null;
     request.session = null;
-    //response.clearCookie('userID')
     response.redirect('/urls');
     console.log("LOG OUT: ", USERDATA.users);
 });
