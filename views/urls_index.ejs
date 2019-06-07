@@ -13,13 +13,6 @@
 
     <% include partials/_header %>
 
-    <div class="main-container">
-        <h2>My URLs</h2>
-        <div class="urls-table-main">
-        </div>
-
-    </div>
-
     <h2 style="padding:5px">My URLs</h2>
 
     <table>
@@ -30,6 +23,9 @@
                     <th style="padding:10px"><%= url %></th>
                     <th style="padding:10px" >
                         <a href='/urls/<%= url %>'> <%= user.urlDb[url]%></a>
+                    </th>
+                    <th style="padding:10px" >
+                        <a> <%= user.visitLog[url]%></a>
                     </th>
                     <th style="padding:10px">
                         <form method="POST" action="/urls/<%= url %>/delete">

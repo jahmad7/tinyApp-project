@@ -9,13 +9,21 @@ const cookieParser = require('cookie-parser');
 const USERDATA = require("./xUserData");
 const FUNCTIONS = require("./functionCalls");
 const bcrypt = require('bcrypt');
+const cookieSession = require("cookie-session");
 
 //add ejs, body parsing and cookie parse to our express library 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser())
+//app.use(cookieParser())
 //use static files 
 app.use(express.static("static"));
+app.use(cookieSession({
+    name: 'session',
+    keys: ["why in the world does isNaN never work"],
+  
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }))
 
 console.log(USERDATA.currentUser)
 
@@ -52,13 +60,15 @@ app.post('/registration', (request, response) => {    //GO TO GO
                 id: userID,
                 email: email,
                 password: hashedPassword,
-                urlDb: null
+                urlDb: null,
+                visitLog: null
             };
             USERDATA.users[userID] = JSON.parse(JSON.stringify(USERDATA.currentUser));
             console.log("current user: ",USERDATA.currentUser);
             console.log("userdata: ", USERDATA.users);
             
-            response.cookie("userID", userID).redirect("/urls");
+            request.user_id = userID;
+            //response.cookie("userID", userID).redirect("/urls");
         }else{
             response.status(403).redirect('/registration');
         }
@@ -115,6 +125,7 @@ app.get('/urls/:shortURL', (request, response) => {
 //redirect to actual webstie 
 app.get("/u/:shortURL", (request, response) => {
     const longURL = USERDATA.shortURLsObject[request.params.shortURL];
+    USERDATA.currentUser.visitLog[request.params.shortURL] += 1;
     response.redirect(longURL);
 
 });
@@ -144,9 +155,11 @@ app.post(`/login`, (request, response) => {
         USERDATA.currentUser.email = USERDATA.users[userID].email;
         USERDATA.currentUser.password = USERDATA.users[userID].password;
         USERDATA.currentUser.urlDb = USERDATA.users[userID].urlDb;
+        USERDATA.currentUser.visitLog = USERDATA.users[userID].visitLog;
 
         //making a cookie
-        response.cookie("userID", USERDATA.currentUser.id).redirect("/urls");
+        request.session.user_id = USERDATA.currentUser.id
+        response.redirect("/urls");
     }else{response.status(403).redirect('/')}
 
 });
@@ -156,7 +169,10 @@ app.post(`/logout`, (request, response) => {
     USERDATA.currentUser.id = null;
     USERDATA.currentUser.email = null;
     USERDATA.currentUser.password = null;
-    response.clearCookie('userID') .redirect('/urls');
+    USERDATA.currentUser.visitLog = null;
+    request.session = null;
+    //response.clearCookie('userID')
+    response.redirect('/urls');
     console.log("LOG OUT: ", USERDATA.users);
 });
 
