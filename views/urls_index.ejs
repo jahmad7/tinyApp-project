@@ -22,7 +22,7 @@
                 <tr >
                     <th style="padding:10px"><%= url %></th>
                     <th style="padding:10px" >
-                        <a href='/urls/<%= url %>'> <%= user.urlDb[url]%></a>
+                        <a href='/u/<%= url %>'> <%= user.urlDb[url]%></a>
                     </th>
                     <th style="padding:10px" >
                         <a> <%= user.visitLog[url]%></a>
@@ -30,6 +30,11 @@
                     <th style="padding:10px">
                         <form method="POST" action="/urls/<%= url %>/delete">
                             <button type="submit"> DELETE</button>
+                        </form>
+                    </th>
+                    <th style="padding:10px">
+                        <form method="GET" action="/urls/<%= url %>">
+                            <button type="submit">EDIT</button>
                         </form>
                     </th>
                 </tr>

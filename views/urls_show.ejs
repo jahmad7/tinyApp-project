@@ -29,6 +29,9 @@
                         <input class="form-control" type="text" name="longURL" placeholder="http://" style="width: 300px; margin: 1em">
                         <button type="submit">UPDATE</button>
                     </form>
+                    <form method="POST" action="/urls/<%= shortURL %>/delete">
+                        <button type="submit"> DELETE</button>
+                    </form>
             </th>
         </tr>
     </table>
