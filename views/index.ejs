@@ -10,7 +10,7 @@
   <% include partials/_header %>
 
   <div class="log-status">
-    <% if(!user.id) { %>
+    <% if(!user) { %>
         <form action="/login" method="POST" >
         Email:<br>
         <input type="text" name="email" value="user@example.com" placeholder="email@domain.com">

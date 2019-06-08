@@ -4,7 +4,7 @@
 
     <div class="logo">
         <h1 id="site-title">TINYAPP</h1>
-        <% if (user.id) { %>
+        <% if (user) { %>
             <p id="site-title"><a href="/urls">URLs</a> | <a href="/urls/new">New URL</a></p>
         <% }else { %>
             <p id="site-title"><a href="/">Login</a> | <a href="/registration">Register</a></p>
@@ -12,14 +12,14 @@
     </div>
 
     <div class="header-middle">
-        <% if(user.id) { %>
+        <% if(user) { %>
             <h3>Welcome <%= user.email %></h3>
             
         <% } %>
     </div>
 
     <div class="log-status">
-            <% if(!user.id) { %>
+            <% if(!user) { %>
                 <form action="/" method="GET" >
                     <br><br>
                     <input type="submit" value="Login">

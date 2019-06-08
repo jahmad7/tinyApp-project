@@ -32,7 +32,7 @@ app.use(cookieSession({
 //home page route 
 app.get('/', (request, response) => {
     let templateVars = {
-        user: USERDATA.currentUser
+        user: USERDATA.users[request.session.user_id]
     };
 
     response.render('index', templateVars);
@@ -41,10 +41,10 @@ app.get('/', (request, response) => {
 //urls page route 
 app.get('/urls', (request, response) =>{
     let templateVars = {
-        user: USERDATA.currentUser
+        user: USERDATA.users[request.session.user_id]
     };
 
-    if (USERDATA.currentUser.id !== null){
+    if (USERDATA.users[request.session.user_id].id !== null){
         response.render('urls_index', templateVars);
     }else {
         response.render('index', templateVars);
@@ -59,23 +59,19 @@ app.post('/registration', (request, response) => {
 
     if (FUNCTIONS.validEmail(USERDATA.users, email)){
         if(email && hashedPassword){
-            USERDATA.currentUser = {
+            USERDATA.user[userID] = {
                 id: userID,
                 email: email,
                 password: hashedPassword,
                 urlDb: {},
                 visitLog: {}
             };
-            USERDATA.users[userID] = JSON.parse(JSON.stringify(USERDATA.currentUser));
 
             let templateVars = {
-                user: USERDATA.currentUser
+                user: USERDATA.users[request.session.user_id]
             };
-
-            console.log("current user: ",USERDATA.currentUser);
-            console.log("userdata: ", USERDATA.users);
             
-            request.user_id = userID;
+            request.session.user_id = userID;
             response.render('urls_index', templateVars);
         }else{
             response.status(403).redirect('/registration');
@@ -85,7 +81,7 @@ app.post('/registration', (request, response) => {
 
 app.get('/registration', (request, response) => {  
     let templateVars = {
-        user: USERDATA.currentUser
+        user: USERDATA.users[request.session.user_id]
     };
     response.render('registration', templateVars);
 });
@@ -94,9 +90,9 @@ app.get('/registration', (request, response) => {
 app.post("/urls", (request, response) => {
     let shortURL = FUNCTIONS.generateRandomString();
     console.log(request.body.longURL);
-    console.log(USERDATA.currentUser.urlDb[shortURL]);
-    USERDATA.currentUser.urlDb[shortURL] = request.body.longURL;
-    console.log(USERDATA.currentUser)
+    console.log(USERDATA.users[request.session.user_id].urlDb[shortURL]);
+    USERDATA.users[request.session.user_id].urlDb[shortURL] = request.body.longURL;
+    console.log(USERDATA.users[request.session.user_id])
     response.redirect(`urls/${shortURL}`);
 });
 
@@ -104,14 +100,14 @@ app.post("/urls", (request, response) => {
 app.get('/urls/new', (request,response)=>{
     let templateVars = {
         urls: USERDATA.urlDatabase,
-        user: USERDATA.currentUser
+        user: USERDATA.users[request.session.user_id]
     };
 
-    if (USERDATA.currentUser.id !== null){
-        console.log(USERDATA.currentUser.id);
+    if (USERDATA.users[request.session.user_id].id !== null){
+        console.log(USERDATA.users[request.session.user_id].id);
         response.render("urls_new", templateVars);
     }else {
-        console.log(USERDATA.currentUser.id);
+        console.log(USERDATA.users[request.session.user_id].id);
         response.render('index', templateVars);
     }
 });
@@ -120,15 +116,15 @@ app.get('/urls/new', (request,response)=>{
 //short URL get request for page 
 app.get('/urls/:shortURL', (request, response) => {
 
-    let longURLPass = USERDATA.currentUser.urlDb[request.params.shortURL];
+    let longURLPass = USERDATA.users[request.session.user_id].urlDb[request.params.shortURL];
 
     let templateVars = {
         shortURL: request.params.shortURL,
         longURL: longURLPass,
-        user: USERDATA.currentUser
+        user: USERDATA.users[request.session.user_id]
     };
 
-    if (USERDATA.currentUser.id !== null){
+    if (USERDATA.users[request.session.user_id].id !== null){
         response.render('urls_show', templateVars);
     } else {
         response.render('index', templateVars);
@@ -141,7 +137,7 @@ app.get("/u/:shortURL", (request, response) => {
     const longURL = USERDATA.shortURLsObject[request.params.shortURL];
 
     //visting log to create track of how many time the site is visited 
-    USERDATA.currentUser.visitLog[request.params.shortURL] += 1;
+    USERDATA.users[request.session.user_id].visitLog[request.params.shortURL] += 1;
 
     response.redirect(longURL);
 });
@@ -149,7 +145,7 @@ app.get("/u/:shortURL", (request, response) => {
 //deleting url from url account
 app.post(`/urls/:shortURL/delete`,(request, response) => {
     const shortURL = request.params.shortURL;
-    delete USERDATA.currentUser.urlDb[shortURL];
+    delete USERDATA.users[request.session.user_id].urlDb[shortURL];
     response.redirect("/urls");
 });
 
@@ -157,7 +153,7 @@ app.post(`/urls/:shortURL/update`,(request, response) => {
     const shortURL = request.params.shortURL;
     const newURL = request.body.longURL;
 
-    USERDATA.currentUser.urlDb[shortURL] = newURL;
+    USERDATA.users[request.session.user_id].urlDb[shortURL] = newURL;
 
     response.redirect("/urls");
 });
@@ -167,28 +163,14 @@ app.post(`/login`, (request, response) => {
     const password = request.body.password;
     const userID = FUNCTIONS.validLogin(USERDATA.users, email, password);
     if (userID){
-        //set current user to the data of the login user 
-        USERDATA.currentUser.id = userID;
-        USERDATA.currentUser.email = USERDATA.users[userID].email;
-        USERDATA.currentUser.password = USERDATA.users[userID].password;
-        USERDATA.currentUser.urlDb = USERDATA.users[userID].urlDb;
-        USERDATA.currentUser.visitLog = USERDATA.users[userID].visitLog;
-
         //making a cookie
-        request.session.user_id = USERDATA.currentUser.id
+        request.session.user_id = userID;
         response.redirect("/urls");
     }else{response.status(403).redirect('/')}
 
 });
 
 app.post(`/logout`, (request, response) => {
- 
-    USERDATA.currentUser.id = null;
-    USERDATA.currentUser.email = null;
-    USERDATA.currentUser.password = null;
-    USERDATA.currentUser.visitLog = {};
-    USERDATA.currentUser.urlDb = {};
-
     request.session = null;
 
     response.redirect('/urls');
