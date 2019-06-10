@@ -44,7 +44,10 @@ Version 1.0
 
 ## ScreenShots
 
-The website has not been editted for design yet, and has op 
+The website has not been editted for design yet, and has been designed only for function
+
+###Login Page
+![Login page screenshot](/screenshots/loginPage.png "Login Page")
 
 ## Acknowledgments
 
