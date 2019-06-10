@@ -93,11 +93,7 @@ app.get('/registration', (request, response) => {
 //url post route
 app.post("/urls", (request, response) => {
     let shortURL = FUNCTIONS.generateRandomString();
-    console.log("long URL", request.body.longURL);
-    console.log(USERDATA.users[request.session.user_id].urlDb[shortURL]);
     USERDATA.modifyURL(request.session.user_id, shortURL, request.body.longURL);
-    //USERDATA.users[request.session.user_id].urlDb[shortURL] = request.body.longURL;
-    console.log("user data", USERDATA.users[request.session.user_id]);
     response.redirect(`urls/${shortURL}`);
 });
 
@@ -111,7 +107,6 @@ app.get('/urls/new', (request,response)=>{
     if (USERDATA.users[request.session.user_id].id !== null){
         response.render("urls_new", templateVars);
     }else {
-        console.log(USERDATA.users[request.session.user_id].id);
         response.render('index', templateVars);
     }
 });
@@ -138,9 +133,8 @@ app.get('/urls/:shortURL', (request, response) => {
 //redirect to actual webstie 
 app.get("/u/:shortURL", (request, response) => {
 
-    const longURL = USERDATA.shortURLsObject[request.params.shortURL];
-    console.log("short list: ", USERDATA.shortURLsObject)
-    console.log("long URL: ",longURL);
+    let shortURLsObject = USERDATA.createShortURLsObejct(USERDATA.users);
+    const longURL = shortURLsObject[request.params.shortURL];
 
     //visting log to create track of how many time the site is visited 
     USERDATA.users[request.session.user_id].visitLog[request.params.shortURL] += 1;
@@ -160,7 +154,6 @@ app.post(`/urls/:shortURL/update`,(request, response) => {
     const newURL = request.body.longURL;
 
     USERDATA.modifyURL(request.session.user_id, shortURL, newURL);
-    console.log(USERDATA.users[request.session.user_id]);
 
     response.redirect("/urls");
 });

@@ -21,8 +21,8 @@ let users = {
         //dishwasher-funk
         password: "$2b$10$QYbp1B8QIBXzzwTMwn25veSrl7WGIrno6V3nOb3WPl2QpMcrZ84si",
         urlDb: {
-            'b2xVn2': 'http://www.lighthouse.ca',
-            '9sm5xK': 'http://www.google.com'
+            'b2xVx2': 'http://www.lighthouse.ca',
+            '9sm5yK': 'http://www.google.com'
         },
         visitLog: {
             'b2xVn2': 0,
@@ -37,12 +37,10 @@ function createShortURLsObejct(users) {
     for(let user in users){
         for (let urlkey in users[user].urlDb){
             shortURLsObject[urlkey] = users[user].urlDb[urlkey];
-        };
+        }
     }
     return shortURLsObject;
 }
-
-let shortURLsObject = createShortURLsObejct(users);
 
 function modifyURL(userID, shortURL, longURL){
     users[userID].urlDb[shortURL] = longURL;
@@ -52,6 +50,6 @@ function modifyURL(userID, shortURL, longURL){
 
 module.exports = {
     users,
-    shortURLsObject,
+    createShortURLsObejct,
     modifyURL
 };

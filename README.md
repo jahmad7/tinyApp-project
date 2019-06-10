@@ -42,6 +42,10 @@ Version 1.0
 
 * **Junaid Ahmad** - *Initial work* - [JAHMAD7](https://github.com/jahmad7)
 
+## ScreenShots
+
+The website has not been editted for design yet, and has op 
+
 ## Acknowledgments
 
 * Lighthouse Labs
