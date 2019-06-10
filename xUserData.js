@@ -44,9 +44,14 @@ function createShortURLsObejct(users) {
 
 let shortURLsObject = createShortURLsObejct(users);
 
+function modifyURL(userID, shortURL, longURL){
+    users[userID].urlDb[shortURL] = longURL;
+}
+
 
 
 module.exports = {
     users,
-    shortURLsObject
+    shortURLsObject,
+    modifyURL
 };

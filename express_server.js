@@ -59,7 +59,10 @@ app.post('/registration', (request, response) => {
 
     if (FUNCTIONS.validEmail(USERDATA.users, email)){
         if(email && hashedPassword){
-            USERDATA.user[userID] = {
+            //create key for new user
+
+            //add new user id to users object
+            USERDATA.users[userID] = {
                 id: userID,
                 email: email,
                 password: hashedPassword,
@@ -67,11 +70,12 @@ app.post('/registration', (request, response) => {
                 visitLog: {}
             };
 
+            request.session.user_id = userID;
+
             let templateVars = {
                 user: USERDATA.users[request.session.user_id]
-            };
-            
-            request.session.user_id = userID;
+            };     
+
             response.render('urls_index', templateVars);
         }else{
             response.status(403).redirect('/registration');
@@ -89,10 +93,11 @@ app.get('/registration', (request, response) => {
 //url post route
 app.post("/urls", (request, response) => {
     let shortURL = FUNCTIONS.generateRandomString();
-    console.log(request.body.longURL);
+    console.log("long URL", request.body.longURL);
     console.log(USERDATA.users[request.session.user_id].urlDb[shortURL]);
-    USERDATA.users[request.session.user_id].urlDb[shortURL] = request.body.longURL;
-    console.log(USERDATA.users[request.session.user_id])
+    USERDATA.modifyURL(request.session.user_id, shortURL, request.body.longURL);
+    //USERDATA.users[request.session.user_id].urlDb[shortURL] = request.body.longURL;
+    console.log("user data", USERDATA.users[request.session.user_id]);
     response.redirect(`urls/${shortURL}`);
 });
 
@@ -104,7 +109,6 @@ app.get('/urls/new', (request,response)=>{
     };
 
     if (USERDATA.users[request.session.user_id].id !== null){
-        console.log(USERDATA.users[request.session.user_id].id);
         response.render("urls_new", templateVars);
     }else {
         console.log(USERDATA.users[request.session.user_id].id);
@@ -135,6 +139,8 @@ app.get('/urls/:shortURL', (request, response) => {
 app.get("/u/:shortURL", (request, response) => {
 
     const longURL = USERDATA.shortURLsObject[request.params.shortURL];
+    console.log("short list: ", USERDATA.shortURLsObject)
+    console.log("long URL: ",longURL);
 
     //visting log to create track of how many time the site is visited 
     USERDATA.users[request.session.user_id].visitLog[request.params.shortURL] += 1;
@@ -153,7 +159,8 @@ app.post(`/urls/:shortURL/update`,(request, response) => {
     const shortURL = request.params.shortURL;
     const newURL = request.body.longURL;
 
-    USERDATA.users[request.session.user_id].urlDb[shortURL] = newURL;
+    USERDATA.modifyURL(request.session.user_id, shortURL, newURL);
+    console.log(USERDATA.users[request.session.user_id]);
 
     response.redirect("/urls");
 });
@@ -173,7 +180,7 @@ app.post(`/login`, (request, response) => {
 app.post(`/logout`, (request, response) => {
     request.session = null;
 
-    response.redirect('/urls');
+    response.redirect('/');
 });
 
 app.listen(PORT, () => {
