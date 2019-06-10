@@ -43,9 +43,8 @@ app.get('/urls', (request, response) =>{
     let templateVars = {
         user: USERDATA.users[request.session.user_id]
     };
-
-    if (USERDATA.users[request.session.user_id].id !== null){
-        response.render('urls_index', templateVars);
+    if (USERDATA.users[request.session.user_id] !== undefined){
+        response.render('urls_index', templateVars).status(300);
     }else {
         response.render('index', templateVars);
     }
@@ -104,7 +103,7 @@ app.get('/urls/new', (request,response)=>{
         user: USERDATA.users[request.session.user_id]
     };
 
-    if (USERDATA.users[request.session.user_id].id !== null){
+    if (USERDATA.users[request.session.user_id] !== undefined){
         response.render("urls_new", templateVars);
     }else {
         response.render('index', templateVars);
@@ -144,18 +143,35 @@ app.get("/u/:shortURL", (request, response) => {
 
 //deleting url from url account
 app.post(`/urls/:shortURL/delete`,(request, response) => {
-    const shortURL = request.params.shortURL;
-    delete USERDATA.users[request.session.user_id].urlDb[shortURL];
-    response.redirect("/urls");
+    let templateVars = {
+        user: USERDATA.users[request.session.user_id]
+    };
+
+    if (USERDATA.users[request.session.user_id] !== undefined){
+        const shortURL = request.params.shortURL;
+        delete USERDATA.users[request.session.user_id].urlDb[shortURL];
+        response.redirect("/urls");
+    } else {
+        response.render('index', templateVars);
+    }
 });
 
 app.post(`/urls/:shortURL/update`,(request, response) => {
-    const shortURL = request.params.shortURL;
-    const newURL = request.body.longURL;
 
-    USERDATA.modifyURL(request.session.user_id, shortURL, newURL);
+    let templateVars = {
+        user: USERDATA.users[request.session.user_id]
+    };
 
-    response.redirect("/urls");
+    if (USERDATA.users[request.session.user_id] !== undefined){
+        const shortURL = request.params.shortURL;
+        const newURL = request.body.longURL;
+        USERDATA.modifyURL(request.session.user_id, shortURL, newURL);
+        response.redirect("/urls");
+        
+    } else {
+        response.render('index', templateVars);
+    }
+    
 });
 
 app.post(`/login`, (request, response) => {
