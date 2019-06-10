@@ -66,7 +66,7 @@ My URLS will show the short URL, the long URL as a hyperlink to the site, and th
 
 ### Update URLs Page
 
-![Update URLs page screenshot](/screenshots/udateURLpage.png "Update URLs Page")
+![Update URLs page screenshot](/screenshots/updateURLpage.png "Update URLs Page")
 
 Clicking the edit button on the My URLs page will bring user to the URL's independent page where they can edit the unique short URL's link to a new site, or delete the URL from the user's database All togehter.
 
