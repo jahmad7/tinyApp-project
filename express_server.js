@@ -106,7 +106,7 @@ app.get('/urls/new', (request,response)=>{
     if (USERDATA.users[request.session.user_id] !== undefined){
         response.render("urls_new", templateVars);
     }else {
-        response.render('index', templateVars);
+        response.render('index', templateVars).status(401);
     }
 });
 
@@ -152,7 +152,7 @@ app.post(`/urls/:shortURL/delete`,(request, response) => {
         delete USERDATA.users[request.session.user_id].urlDb[shortURL];
         response.redirect("/urls");
     } else {
-        response.render('index', templateVars);
+        response.render('index', templateVars).status(401);
     }
 });
 
@@ -167,9 +167,9 @@ app.post(`/urls/:shortURL/update`,(request, response) => {
         const newURL = request.body.longURL;
         USERDATA.modifyURL(request.session.user_id, shortURL, newURL);
         response.redirect("/urls");
-        
+
     } else {
-        response.render('index', templateVars);
+        response.render('index', templateVars).status(401);
     }
     
 });
