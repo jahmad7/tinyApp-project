@@ -115,19 +115,20 @@ app.get('/urls/new', (request,response)=>{
 
 //short URL get request for page 
 app.get('/urls/:shortURL', (request, response) => {
-
-    let longURLPass = USERDATA.users[request.session.user_id].urlDb[request.params.shortURL];
-
-    let templateVars = {
-        shortURL: request.params.shortURL,
-        longURL: longURLPass,
-        user: USERDATA.users[request.session.user_id]
-    };
-
     if (USERDATA.users[request.session.user_id].id !== null){
+        let longURLPass = USERDATA.users[request.session.user_id].urlDb[request.params.shortURL];
+
+        let templateVars = {
+            shortURL: request.params.shortURL,
+            longURL: longURLPass,
+            user: USERDATA.users[request.session.user_id]
+        };
         response.render('urls_show', templateVars);
     } else {
-        response.render('index', templateVars);
+        let templateVarsIndex = {
+            user: USERDATA.users[request.session.user_id]
+        };
+        response.render('index', templateVarsIndex);
     }
 });
 
