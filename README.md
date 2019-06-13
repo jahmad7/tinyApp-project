@@ -27,8 +27,11 @@ A step by step explaination of setting up the express sever and using nodemon to
 To run the server: 
 
 ```
+npm install
 npm start 
 ```
+
+*npm install downloads the dependencies required for the program*
 
 ## Contributing
 

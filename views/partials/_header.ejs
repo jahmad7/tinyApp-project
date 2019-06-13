@@ -1,5 +1,4 @@
 <!--   Header for all parts of the website as a constistent partial-->
-
 <header class="header-container">
 
     <div class="logo">
@@ -19,12 +18,7 @@
     </div>
 
     <div class="log-status">
-            <% if(!user) { %>
-                <form action="/" method="GET" >
-                    <br><br>
-                    <input type="submit" value="Login">
-                </form> 
-            <% } else { %>
+            <% if(user) { %>
                 <form method="POST" action="/logout" id="logout">
                     <button form="logout" type="submit">Logout</button>
                 </form>

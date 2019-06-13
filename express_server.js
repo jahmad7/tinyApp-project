@@ -45,7 +45,7 @@ app.get('/urls', (request, response) =>{
     };
     if (USERDATA.users[request.session.user_id] !== undefined){
         response.render('urls_index', templateVars).status(300);
-    }else {
+    } else {
         response.render('index', templateVars);
     }
 });
@@ -76,10 +76,12 @@ app.post('/registration', (request, response) => {
             };     
 
             response.render('urls_index', templateVars);
-        }else{
+        }else {
             response.status(403).redirect('/registration');
         }
-    } else{response.status(403).redirect('/registration');}  
+    } else {
+        response.status(403).redirect('/registration');
+    }  
 });
 
 app.get('/registration', (request, response) => {  
@@ -104,8 +106,8 @@ app.get('/urls/new', (request,response)=>{
     };
 
     if (USERDATA.users[request.session.user_id] !== undefined){
-        response.render("urls_new", templateVars);
-    }else {
+        response.render('urls_new', templateVars);
+    } else {
         response.render('index', templateVars).status(401);
     }
 });
@@ -130,13 +132,16 @@ app.get('/urls/:shortURL', (request, response) => {
 });
 
 //redirect to actual webstie 
-app.get("/u/:shortURL", (request, response) => {
+app.get('/u/:shortURL', (request, response) => {
 
     let shortURLsObject = USERDATA.createShortURLsObejct(USERDATA.users);
     const longURL = shortURLsObject[request.params.shortURL];
 
-    //visting log to create track of how many time the site is visited 
-    USERDATA.users[request.session.user_id].visitLog[request.params.shortURL] += 1;
+
+    //if user is logged in, visting log to create track of how many time the site is visited 
+    if (request.session.user_id){
+        USERDATA.users[request.session.user_id].visitLog[request.params.shortURL] += 1;
+    }
 
     response.redirect(longURL);
 });
@@ -182,7 +187,9 @@ app.post(`/login`, (request, response) => {
         //making a cookie
         request.session.user_id = userID;
         response.redirect("/urls");
-    }else{response.status(403).redirect('/')}
+    } else {
+        response.status(403).redirect('/');
+    }
 
 });
 
